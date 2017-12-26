@@ -1,0 +1,3 @@
+[submodule "baresip"]
+	path = baresip
+	url = https://github.com/alfredh/baresip.git

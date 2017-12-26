@@ -5,10 +5,10 @@
 #
 
 # Paths to your Android SDK/NDK
-NDK_PATH  := $(HOME)/android/android-ndk-r11c
-SDK_PATH  := $(HOME)/android/android-sdk
+NDK_PATH  := /Users/jxy/android-ndk-r11c
+# SDK_PATH  := $(HOME)/android/android-sdk
 
-PLATFORM  := android-17
+PLATFORM  := android-21
 
 # Path to install binaries on your Android-device
 TARGET_PATH=/data/local/tmp
@@ -45,10 +45,19 @@ CFLAGS    := \
 	-isystem $(SYSROOT)/include/ \
 	-I$(PWD)/openssl/include \
 	-march=armv7-a \
+	-I$(PWD)/openssl/include \
+	-I$(PWD)/ffmpeg-3.4.1 \
 	-fPIE \
 	-DCONFIG_PATH='\"$(CONFIG_PATH)\"'
 LFLAGS    := -L$(SYSROOT)/lib/ \
 	-L$(PWD)/openssl \
+	-L$(PWD)/ffmpeg-3.4.1/libavcodec \
+	-L$(PWD)/ffmpeg-3.4.1/libavdevice \
+	-L$(PWD)/ffmpeg-3.4.1/libavfilter \
+	-L$(PWD)/ffmpeg-3.4.1/libavformat \
+	-L$(PWD)/ffmpeg-3.4.1/libavutil \
+	-L$(PWD)/ffmpeg-3.4.1/libswresample \
+	-L$(PWD)/ffmpeg-3.4.1/libswscale \
 	-fPIE -pie
 LFLAGS    += --sysroot=$(NDK_PATH)/platforms/$(PLATFORM)/arch-arm
 
@@ -91,7 +100,8 @@ baresip:	Makefile librem.a libre.a
 	make $@ -C baresip $(COMMON_FLAGS) STATIC=1 \
 		LIBRE_SO=$(PWD)/re LIBREM_PATH=$(PWD)/rem \
 	        MOD_AUTODETECT= \
-		EXTRA_MODULES="g711 stdio opensles dtls_srtp"
+		EXTRA_MODULES="g711 stdio opensles dtls_srtp avcodec avformat " \
+		install-static
 
 .PHONY: selftest
 selftest:	Makefile librem.a libre.a
@@ -112,10 +122,9 @@ config:
 	$(ADB) push baresip/share $(TARGET_PATH)/share
 
 clean:
-	make distclean -C baresip
-	make distclean -C retest
-	make distclean -C rem
-	make distclean -C re
+	make clean -C baresip
+	make clean -C rem
+	make clean -C re
 
 .PHONY: openssl
 openssl:
