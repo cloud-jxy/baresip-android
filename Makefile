@@ -5,10 +5,11 @@
 #
 
 # Paths to your Android SDK/NDK
-NDK_PATH  := /Users/jxy/android-ndk-r11c
-# SDK_PATH  := $(HOME)/android/android-sdk
+NDK_PATH  := /Users/jxy/Library/Android/sdk/ndk-bundle
+# NDK_PATH  := /Users/jxy/android-ndk-r11c
+SDK_PATH  := /Users/jxy/Library/Android/sdk
 
-PLATFORM  := android-21
+PLATFORM  := android-17
 
 # Path to install binaries on your Android-device
 TARGET_PATH=/data/local/tmp
@@ -46,18 +47,23 @@ CFLAGS    := \
 	-I$(PWD)/openssl/include \
 	-march=armv7-a \
 	-I$(PWD)/openssl/include \
-	-I$(PWD)/ffmpeg-3.4.1 \
-	-fPIE \
+	-I$(PWD)/libav \
+	-I$(PWD)/libvpx \
+	-mfloat-abi=softfp -mfpu=neon \
+	-I$(PWD) \
+	-fPIE -fPIC \
 	-DCONFIG_PATH='\"$(CONFIG_PATH)\"'
 LFLAGS    := -L$(SYSROOT)/lib/ \
 	-L$(PWD)/openssl \
-	-L$(PWD)/ffmpeg-3.4.1/libavcodec \
-	-L$(PWD)/ffmpeg-3.4.1/libavdevice \
-	-L$(PWD)/ffmpeg-3.4.1/libavfilter \
-	-L$(PWD)/ffmpeg-3.4.1/libavformat \
-	-L$(PWD)/ffmpeg-3.4.1/libavutil \
-	-L$(PWD)/ffmpeg-3.4.1/libswresample \
-	-L$(PWD)/ffmpeg-3.4.1/libswscale \
+	-L$(PWD)/libav2/libavcodec \
+	-L$(PWD)/libav2/libavdevice \
+	-L$(PWD)/libav2/libavfilter \
+	-L$(PWD)/libav2/libavformat \
+	-L$(PWD)/libav2/libavutil \
+	-L$(PWD)/libav2/libavresample \
+	-L$(PWD)/libav2/libswscale \
+	-L$(PWD)/libvpx \
+	-L$(PWD)/SDL2-2.0.7/build/android/obj/local/armeabi \
 	-fPIE -pie
 LFLAGS    += --sysroot=$(NDK_PATH)/platforms/$(PLATFORM)/arch-arm
 
@@ -101,7 +107,7 @@ baresip:	Makefile librem.a libre.a
 		LIBRE_SO=$(PWD)/re LIBREM_PATH=$(PWD)/rem \
 	        MOD_AUTODETECT= \
 		EXTRA_MODULES="g711 stdio opensles dtls_srtp avcodec avformat " \
-		install-static
+
 
 .PHONY: selftest
 selftest:	Makefile librem.a libre.a
